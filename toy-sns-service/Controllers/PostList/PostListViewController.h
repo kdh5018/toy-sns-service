@@ -6,8 +6,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Post.h"
+@import FirebaseCore;
+@import FirebaseFirestore;
 
-@interface ViewController : UIViewController
+
+@interface PostListViewController : UIViewController
 
 
 @end
