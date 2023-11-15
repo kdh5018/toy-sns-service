@@ -16,16 +16,21 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.delegate = self;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+#pragma mark UITabBarControllerDelegate
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
+    if ([viewController isKindOfClass:[AddPostViewController class]]) {
+        
+        // AddPostViewController 생성해서 present 시키기
+        [AddPostViewController present:self];
+        
+        return NO;
+    }
+    return YES;
 }
-*/
 
 @end

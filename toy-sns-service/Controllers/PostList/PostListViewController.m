@@ -15,6 +15,8 @@
 // nonatomic을 사용하면 동작이 조금 더 빨라짐
 @property (weak, nonatomic, nullable) FIRFirestore *db;
 
+@property (weak, nonatomic) IBOutlet UITableView *postListTableView;
+
 @end
 
 @implementation PostListViewController
@@ -23,67 +25,135 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _db = [FIRFirestore firestore];
+    [self initialSetting];
     
     __weak PostListViewController *weakSelf = self;
     
-#pragma mark 데이터 조회
-        [[[_db collectionWithPath:@"posts"] queryOrderedByField:@"updated_at" descending:YES]
-            getDocumentsWithCompletion:^(FIRQuerySnapshot *snapshot, NSError *error) {
-              if (error != nil) {
-                NSLog(@"Error getting documents: %@", error);
-              } else {
-                  PostListViewController *strongSelf = weakSelf;
-                  if (strongSelf) {
-                      strongSelf->_postList = [Post fromFIRQuerySnapshot:snapshot];
-                  }
-              }
-            }];
-    
-#pragma mark 데이터 추가
-    FIRDocumentReference *newPostRef = [[_db collectionWithPath:@"posts"] documentWithAutoID];
-    NSDictionary *newPostDictionary = @{
-        @"identifier": newPostRef.documentID,
-        @"title": @"타이틀",
-        @"content": @"내용",
-        @"image":@"https://plus.unsplash.com/premium_photo-1699372281371-72909c172533?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMHx8fGVufDB8fHx8fA%3D%3D",
-        @"created_at": [FIRTimestamp timestampWithDate:[NSDate date]],
-        @"updated_at": [FIRTimestamp timestampWithDate:[NSDate date]],
-    };
-    
-    [newPostRef setData:newPostDictionary completion:^(NSError * _Nullable error) {
-        NSLog(@"%s, line: %d, %@",__func__, __LINE__, [error localizedDescription]);
-        if (error != nil) {
-            NSLog(@"Error getting documents: %@", error);
-        } else {
-            NSLog(@"포스팅 추가 성공: %@", newPostRef.documentID);
+    [self fetchPosts:^(NSMutableArray<Post *> *fetchedPosts) {
+        PostListViewController * strongSelf = weakSelf;
+        if (strongSelf) {
+            strongSelf->_postList = fetchedPosts;
+            [strongSelf->_postListTableView reloadData];
         }
     }];
     
-#pragma mark 데이터 수정
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNotification:) name:PostListVCShouldFetchListNotification object:nil];
+}
+
+- (void)dealloc
+{
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:PostListVCShouldFetchListNotification object:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
     
-            NSDictionary *updatedPostDictionary = @{
-              @"identifier": newPostRef.documentID,
-              @"title": @"타이틀 - 수정 완료",
-              @"content": @"내용 - 수정 완료",
-              @"updated_at": [FIRTimestamp timestampWithDate:[NSDate date]],
-            };
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNotification:) name:PostListVCShouldFetchListNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:PostListVCShouldFetchListNotification object:nil];
+}
+
+#pragma mark UITableViewDataSource 관련
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
+    return _postList.count ?: 0;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"%s, line: %d, indexPath.row: %d",__func__, __LINE__, indexPath.row);
+    Post *cellData = [_postList objectAtIndex:indexPath.row];
     
-        FIRDocumentReference *postUpdateRef = [[_db collectionWithPath:@"posts"]
-                                                documentWithPath:@"p7PTfxGs3tIWp047jAx5"];
+    PostTableViewCell *cell = (PostTableViewCell *)[tableView dequeueReusableCellWithIdentifier:PostTableViewCell.cellReuseIdentifier forIndexPath:indexPath];
     
-        [postUpdateRef updateData:updatedPostDictionary completion:^(NSError * _Nullable error) {
-            if (error != nil) {
-              NSLog(@"Error updating document: %@", error);
-            } else {
-              NSLog(@"Document successfully updated");
+    [cell configureCell:cellData];
+    
+    return cell;
+}
+
+#pragma mark 포스트 데이터 관련
+- (void)initialSetting {
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
+    _db = [FIRFirestore firestore];
+    
+    _postListTableView.dataSource = self;
+    
+    UINib * postCellNib = [UINib nibWithNibName:@"PostTableViewCell" bundle:nil];
+    [_postListTableView registerNib:postCellNib forCellReuseIdentifier:PostTableViewCell.cellReuseIdentifier];
+}
+
+#pragma mark Selector Action
+- (void)handleNotification:(NSNotification *)notification {
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
+    if ([[notification name] isEqualToString:PostListVCShouldFetchListNotification]) {
+        [self fetchPosts:^(NSMutableArray<Post *> *fetchedPosts) {
+            __weak PostListViewController *weakSelf = self;
+            
+            PostListViewController * strongSelf = weakSelf;
+            
+            if (strongSelf) {
+                strongSelf->_postList = fetchedPosts;
+                [strongSelf->_postListTableView reloadData];
             }
         }];
+    }
+}
+
+#pragma mark 데이터 조회
+- (void)fetchPosts:(void(^)(NSMutableArray<Post *> *))completion {
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
+    __weak PostListViewController *weakSelf = self;
     
+    [[[_db collectionWithPath:@"posts"] queryOrderedByField:@"updated_at" descending:YES]
+     getDocumentsWithCompletion:^(FIRQuerySnapshot *snapshot, NSError *error) {
+        
+        NSMutableArray<Post *> * tempPostList = [[NSMutableArray alloc] init];
+        
+        if (error != nil) {
+            NSLog(@"Error getting documents: %@", error);
+        } else {
+            tempPostList = [Post fromFIRQuerySnapshot:snapshot];
+            completion(tempPostList);
+            //                  PostListViewController *strongSelf = weakSelf;
+            //                  if (strongSelf) {
+            //                      strongSelf->_postList = [Post fromFIRQuerySnapshot:snapshot];
+            //                  }
+        }
+    }];
+}
+
+#pragma mark 데이터 수정
+- (void)editPost:(FIRDocumentReference *)postRef {
+    NSDictionary *updatedPostDictionary = @{
+        @"identifier": postRef.documentID,
+        @"title": @"타이틀 - 수정 완료",
+        @"content": @"내용 - 수정 완료",
+        @"updated_at": [FIRTimestamp timestampWithDate:[NSDate date]],
+    };
+    
+    FIRDocumentReference *postUpdateRef = [[_db collectionWithPath:@"posts"]
+                                           documentWithPath:@"p7PTfxGs3tIWp047jAx5"];
+    
+    [postUpdateRef updateData:updatedPostDictionary completion:^(NSError * _Nullable error) {
+        if (error != nil) {
+            NSLog(@"Error updating document: %@", error);
+        } else {
+            NSLog(@"Document successfully updated");
+        }
+    }];
+}
+
 #pragma mark 데이터 삭제
-    
+- (void)deletePost:(NSString *)postIdentifier {
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
     FIRDocumentReference *postDeleteRef = [[_db collectionWithPath:@"posts"]
-                                            documentWithPath:@"p7PTfxGs3tIWp047jAx5"];
+                                           documentWithPath:postIdentifier];
     
     [postDeleteRef deleteDocumentWithCompletion:^(NSError * _Nullable error) {
         if (error != nil) {
@@ -93,6 +163,4 @@
         }
     }];
 }
-
-
 @end

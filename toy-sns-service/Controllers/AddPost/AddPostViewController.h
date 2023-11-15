@@ -6,10 +6,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Post.h"
+#import "Constants.h"
+#import "SelectUnsplashPhotoViewController.h"
+#import "UIViewController+Popup.h"
+@import FirebaseCore;
+@import FirebaseFirestore;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AddPostViewController : UIViewController
+
+//+ (void)present:(UIViewController *)caller;
 
 @end
 

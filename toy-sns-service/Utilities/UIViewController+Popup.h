@@ -11,6 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIViewController (Popup)
 
++ (void)present:(UIViewController *)caller;
+
++ (void)presentWithNavigation:(UIViewController *)caller;
+
 @end
 
 NS_ASSUME_NONNULL_END
