@@ -37,4 +37,21 @@
     [caller presentViewController:navController animated:YES completion:nil];
 }
 
++ (instancetype)presentWithNavigationAndReturnVC:(UIViewController *)caller {
+    NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
+    
+    NSString *className =  NSStringFromClass([self class]);
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:className bundle:nil];
+    UIViewController *popupVC = [storyboard instantiateViewControllerWithIdentifier:className];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:popupVC];
+    
+    [navController setModalPresentationStyle: UIModalPresentationFullScreen];
+    
+    [caller presentViewController:navController animated:YES completion:nil];
+    
+    return popupVC;
+}
+
 @end

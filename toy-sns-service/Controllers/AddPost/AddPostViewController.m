@@ -10,6 +10,9 @@
 
 
 @interface AddPostViewController ()
+{
+    NSString *_selectedImgUrlString;
+}
 
 @property (weak, nonatomic, nullable) FIRFirestore *db;
 
@@ -25,6 +28,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     _db = [FIRFirestore firestore];
+    
+    _postImageView.sd_imageTransition = SDWebImageTransition.fadeTransition;
+    _postImageView.sd_imageIndicator = SDWebImageProgressIndicator.defaultIndicator;
+    _postImageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 #pragma mark IBActions
@@ -45,7 +52,10 @@
     
     __weak AddPostViewController *weakSelf = self;
     
-    [self addPost:titleInput withContent:contentInput withcompletion:^{
+    [self addPost:titleInput 
+      withContent:contentInput
+     withImageUrl:_selectedImgUrlString ?: @""
+   withcompletion:^{
         NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"포스트 완료");
         
         AddPostViewController *strongSelf = weakSelf;
@@ -62,13 +72,24 @@
 - (IBAction)onPhotoSelectBtnClicked:(UIButton *)sender {
     NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
     
-    [SelectUnsplashPhotoViewController presentWithNavigation:self];
+//    [SelectUnsplashPhotoViewController presentWithNavigation:self];
+    SelectUnsplashPhotoViewController *selectPhotoVC = (SelectUnsplashPhotoViewController *)[SelectUnsplashPhotoViewController presentWithNavigationAndReturnVC:self];
+    
+    selectPhotoVC.photoSelectionBlock = ^(NSString * selectedImgUrl){
+        NSLog(@"%s, line: %d, selectedImgUrl: %@",__func__, __LINE__, selectedImgUrl);
+        
+        self->_selectedImgUrlString = selectedImgUrl;
+        
+        NSURL *imgUrl = [[NSURL alloc] initWithString:selectedImgUrl];
+        [self->_postImageView sd_setImageWithURL:imgUrl];
+    };
     
 }
 
 #pragma mark 데이터 추가
 - (void)addPost:(NSString *)title
     withContent:(NSString *)content
+   withImageUrl:(NSString *)imageUrlString
  withcompletion:(void(^)(void))completion {
     NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
     FIRDocumentReference *newPostRef = [[_db collectionWithPath:@"posts"] documentWithAutoID];
@@ -76,7 +97,7 @@
         @"identifier": newPostRef.documentID,
         @"title": title,
         @"content": content,
-        @"image":@"https://images.unsplash.com/photo-1695653422909-20d8cc35ca2e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D",
+        @"image":imageUrlString,
         @"created_at": [FIRTimestamp timestampWithDate:[NSDate date]],
         @"updated_at": [FIRTimestamp timestampWithDate:[NSDate date]],
     };

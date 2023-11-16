@@ -23,8 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma makr Instance Method
 - (void)configureCell:(Post *)cellData;
 
-#pragma mark Class Methods
-+ (NSString *)cellReuseIdentifier;
 @end
 
 NS_ASSUME_NONNULL_END

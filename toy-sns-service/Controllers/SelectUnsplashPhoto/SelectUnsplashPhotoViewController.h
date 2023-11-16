@@ -6,10 +6,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "USPhotoSearchResponse.h"
+#import "PhotoCollectionViewCell.h"
+#import "UICollectionViewCell+ReuseId.h"
+#import "UIScrollView+Helpers.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SelectUnsplashPhotoViewController : UIViewController <UISearchBarDelegate>
+@interface SelectUnsplashPhotoViewController : UIViewController <UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+
+@property (nonatomic, nullable, copy) void(^photoSelectionBlock)(NSString *);
 
 @end
 

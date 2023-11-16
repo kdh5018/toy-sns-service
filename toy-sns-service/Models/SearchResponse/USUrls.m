@@ -9,4 +9,16 @@
 
 @implementation USUrls
 
+- (instancetype)initWithDictionary:(NSDictionary<NSString *,id> *)jsonDictionary
+{
+    self = [super init];
+    
+    if (self) {
+        _regular    = jsonDictionary[@"regular"] ?: @"";
+        _small      = jsonDictionary[@"small"] ?: @"";
+        _full       = jsonDictionary[@"full"] ?: @"";
+    }
+    return self;
+}
+
 @end

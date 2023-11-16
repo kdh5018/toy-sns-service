@@ -6,10 +6,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "USPhoto.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface USPhotoSearchResponse : NSObject
+
+@property (nonatomic, assign) NSInteger total;
+@property (nonatomic, assign) NSInteger totalPages;
+@property (nonatomic, nullable, copy) NSMutableArray<USPhoto *> * results;
+
+- (instancetype)initWithDictionary:(NSDictionary<NSString *, id> *)jsonDictionary;
 
 @end
 

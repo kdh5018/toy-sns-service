@@ -9,4 +9,8 @@
 
 @implementation UITableViewCell (ReuseId)
 
++ (NSString *)reuseIdentifier {
+    return NSStringFromClass([self class]);
+}
+
 @end

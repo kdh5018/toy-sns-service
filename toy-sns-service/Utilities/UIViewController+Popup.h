@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentWithNavigation:(UIViewController *)caller;
 
++ (instancetype)presentWithNavigationAndReturnVC:(UIViewController *)caller;
+
 @end
 
 NS_ASSUME_NONNULL_END

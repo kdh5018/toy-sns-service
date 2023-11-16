@@ -9,4 +9,8 @@
 
 @implementation UICollectionViewCell (ReuseId)
 
++ (NSString *)reuseIdentifier {
+    return NSStringFromClass([self class]);
+}
+
 @end

@@ -9,4 +9,17 @@
 
 @implementation USPhoto
 
+- (instancetype)initWithDictionary:(NSDictionary<NSString *,id> *)jsonDictionary
+{
+    self = [super init];
+    
+    if (self) {
+        _identifier = jsonDictionary[@"id"] ?: @"";
+        _urls = [[USUrls alloc] initWithDictionary:jsonDictionary[@"urls"]];
+    }
+    
+    return self;
+}
+
+
 @end

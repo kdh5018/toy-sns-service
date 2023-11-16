@@ -70,7 +70,7 @@
     NSLog(@"%s, line: %d, indexPath.row: %d",__func__, __LINE__, indexPath.row);
     Post *cellData = [_postList objectAtIndex:indexPath.row];
     
-    PostTableViewCell *cell = (PostTableViewCell *)[tableView dequeueReusableCellWithIdentifier:PostTableViewCell.cellReuseIdentifier forIndexPath:indexPath];
+    PostTableViewCell *cell = (PostTableViewCell *)[tableView dequeueReusableCellWithIdentifier:PostTableViewCell.reuseIdentifier forIndexPath:indexPath];
     
     [cell configureCell:cellData];
     
@@ -85,7 +85,7 @@
     _postListTableView.dataSource = self;
     
     UINib * postCellNib = [UINib nibWithNibName:@"PostTableViewCell" bundle:nil];
-    [_postListTableView registerNib:postCellNib forCellReuseIdentifier:PostTableViewCell.cellReuseIdentifier];
+    [_postListTableView registerNib:postCellNib forCellReuseIdentifier:PostTableViewCell.reuseIdentifier];
 }
 
 #pragma mark Selector Action

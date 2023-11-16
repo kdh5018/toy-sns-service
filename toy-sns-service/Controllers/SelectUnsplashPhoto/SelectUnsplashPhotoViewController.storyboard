@@ -76,6 +76,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="photoListCollectionView" destination="RgA-Gp-STW" id="zDR-xv-Syu"/>
                         <outlet property="photoSearchBar" destination="yvA-p0-dNQ" id="Bg3-rq-uRK"/>
                     </connections>
                 </viewController>

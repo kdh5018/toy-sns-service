@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UITableViewCell (ReuseId)
 
++ (NSString *)reuseIdentifier;
+
 @end
 
 NS_ASSUME_NONNULL_END

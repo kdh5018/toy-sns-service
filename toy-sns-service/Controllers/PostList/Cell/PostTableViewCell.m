@@ -45,10 +45,4 @@
     
 }
 
-
-#pragma mark reuseIdentifier
-+ (NSString *)cellReuseIdentifier {
-    return @"PostTableViewCell";
-}
-
 @end
