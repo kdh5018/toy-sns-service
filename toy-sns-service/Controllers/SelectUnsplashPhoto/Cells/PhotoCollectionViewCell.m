@@ -1,0 +1,12 @@
+//
+//  PhotoCollectionViewCell.m
+//  toy-sns-service
+//
+//  Created by 김도훈 on 11/16/23.
+//
+
+#import "PhotoCollectionViewCell.h"
+
+@implementation PhotoCollectionViewCell
+
+@end
