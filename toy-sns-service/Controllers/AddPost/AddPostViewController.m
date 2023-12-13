@@ -20,6 +20,12 @@
 @property (weak, nonatomic) IBOutlet UITextView *contentInputTextField;
 @property (weak, nonatomic) IBOutlet UIImageView *postImageView;
 
+// 각종 UI 설정을 위한 Outlet 설정
+@property (weak, nonatomic) IBOutlet UIButton *dismissButton;
+@property (weak, nonatomic) IBOutlet UIButton *addPostButton;
+@property (weak, nonatomic) IBOutlet UIButton *selectImageButton;
+@property (weak, nonatomic) IBOutlet UITextView *inputView;
+
 @end
 
 @implementation AddPostViewController
@@ -29,9 +35,30 @@
     // Do any additional setup after loading the view.
     _db = [FIRFirestore firestore];
     
+    [self setupUI];
+    
     _postImageView.sd_imageTransition = SDWebImageTransition.fadeTransition;
     _postImageView.sd_imageIndicator = SDWebImageProgressIndicator.defaultIndicator;
     _postImageView.contentMode = UIViewContentModeScaleAspectFill;
+}
+
+- (void)setupUI {
+    
+    _dismissButton.layer.borderWidth = 1;
+    _dismissButton.layer.borderColor = UIColor.blackColor.CGColor;
+    _dismissButton.layer.cornerRadius = 8;
+    
+    _addPostButton.layer.borderWidth = 1;
+    _addPostButton.layer.borderColor = UIColor.blackColor.CGColor;
+    _addPostButton.layer.cornerRadius = 8;
+    
+    _selectImageButton.layer.borderWidth = 1;
+    _selectImageButton.layer.borderColor = UIColor.blackColor.CGColor;
+    _selectImageButton.layer.cornerRadius = 8;
+    
+    _inputView.layer.borderWidth = 1;
+    _inputView.layer.borderColor = UIColor.blackColor.CGColor;
+    _inputView.layer.cornerRadius = 8;
 }
 
 #pragma mark IBActions

@@ -77,6 +77,25 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // 삭제할 데이터를 가져옵니다.
+        Post *post = _postList[indexPath.row];
+        
+        // Firebase에서 데이터 삭제
+        [self deletePost:post.identifier];
+        
+        // 데이터 삭제 로직을 구현합니다.
+        [_postList removeObjectAtIndex:indexPath.row];
+        
+        
+        // 테이블뷰에서 해당 셀을 삭제합니다.
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    
+}
+
 #pragma mark 포스트 데이터 관련
 - (void)initialSetting {
     NSLog(@"%s, line: %d, %@",__func__, __LINE__, @"");
